@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KosPredict MDN - Prediksi Harga Kos Madiun</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        input[type="range"] {
+            accent-color: #2563eb;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800">
+
+    {% csrf_token %}
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- HEADER -->
+        <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+
+            <div>
+                <div class="flex items-center gap-3 mb-2">
+
+                    <div class="w-11 h-11 rounded-xl bg-blue-600 text-white flex items-center justify-center text-xl font-bold">
+                        K
+                    </div>
+
+                    <h1 class="text-2xl font-extrabold tracking-tight">
+                        KosPredict MDN
+                    </h1>
+
+                </div>
+
+                <p class="text-slate-500 text-sm">
+                    Sistem Prediksi dan Analisis Harga Kos di Kota Madiun
+                </p>
+            </div>
+
+            <div class="flex flex-wrap gap-2 text-sm">
+
+                <a href="#prediksi"
+                   class="px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700">
+                    Prediksi
+                </a>
+
+                <a href="#analisis"
+                   class="px-4 py-2 rounded-lg bg-white border border-slate-200 text-slate-600 hover:bg-slate-100">
+                    Analisis
+                </a>
+
+                <a href="#daftar-kos"
+                   class="px-4 py-2 rounded-lg bg-white border border-slate-200 text-slate-600 hover:bg-slate-100">
+                    Daftar Kos
+                </a>
+
+            </div>
+
+        </header>
+
+
+        <!-- JUDUL DASHBOARD -->
+        <section class="mb-8">
+
+            <p class="text-sm font-semibold text-blue-600">
+                SISTEM CERDAS
+            </p>
+
+            <h2 class="text-3xl sm:text-4xl font-extrabold mt-2 tracking-tight">
+                Dashboard Prediksi Harga Kos
+            </h2>
+
+            <p class="text-slate-500 mt-3 max-w-2xl">
+                Cari estimasi harga kos berdasarkan jarak, fasilitas AC,
+                dan rating. Jelajahi juga ringkasan serta analisis data
+                kos di Kota Madiun.
+            </p>
+
+        </section>
+
+
+        <!-- RINGKASAN DATA -->
+        <section class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+
+                <p class="text-sm text-slate-500">
+                    Total Data Kos
+                </p>
+
+                <h3 class="text-3xl font-extrabold mt-3">
+                    {{ total_kos }}
+                </h3>
+
+                <p class="text-xs text-slate-400 mt-2">
+                </p>
+
+            </div>
+
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+
+                <p class="text-sm text-slate-500">
+                    Rata-rata Harga
+                </p>
+
+                <h3 class="text-3xl font-extrabold mt-3">
+                    Rp{{ rata_rata_harga_display }}
+                </h3>
+
+                <p class="text-xs text-slate-400 mt-2">
+                </p>
+
+            </div>
+
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+
+                <p class="text-sm text-slate-500">
+                    Rata-rata Rating
+                </p>
+
+                <h3 class="text-3xl font-extrabold mt-3">
+                    {{ rata_rata_rating|floatformat:2 }}
+                </h3>
+
+                <p class="text-xs text-slate-400 mt-2">
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- PREDIKSI DAN INSIGHT -->
+        <section id="prediksi"
+                 class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
+
+
+            <!-- FORM PREDIKSI -->
+            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-100">
+
+                <div class="mb-7">
+
+                    <h3 class="text-xl font-bold">
+                        Prediksi Harga Kos
+                    </h3>
+
+                    <p class="text-sm text-slate-500 mt-2">
+                        Atur kriteria kos untuk mendapatkan estimasi harga
+                        dari model Machine Learning.
+                    </p>
+
+                </div>
+
+
+                <!-- SLIDER JARAK -->
+                <div class="mb-8">
+
+                    <div class="flex justify-between items-center mb-3">
+
+                        <label for="jarak" class="font-semibold">
+                            Jarak dari pusat kota
+                        </label>
+
+                        <span id="jarakValue"
+                              class="text-blue-600 font-bold">
+                            2.0 km
+                        </span>
+
+                    </div>
+
+                    <input id="jarak"
+                           type="range"
+                           min="0.6"
+                           max="5"
+                           step="0.1"
+                           value="2"
+                           class="w-full">
+
+                    <div class="flex justify-between text-xs text-slate-400 mt-2">
+                        <span>0.6 km</span>
+                        <span>5 km</span>
+                    </div>
+
+                </div>
+
+
+                <!-- SLIDER RATING -->
+                <div class="mb-8">
+
+                    <div class="flex justify-between items-center mb-3">
+
+                        <label for="rating" class="font-semibold">
+                            Rating kos
+                        </label>
+
+                        <span id="ratingValue"
+                              class="text-blue-600 font-bold">
+                            4.0
+                        </span>
+
+                    </div>
+
+                    <input id="rating"
+                           type="range"
+                           min="3.1"
+                           max="4.9"
+                           step="0.1"
+                           value="4"
+                           class="w-full">
+
+                    <div class="flex justify-between text-xs text-slate-400 mt-2">
+                        <span>3.1</span>
+                        <span>4.9</span>
+                    </div>
+
+                </div>
+
+
+                <!-- PILIHAN AC -->
+                <div class="mb-8">
+
+                    <label for="ac" class="font-semibold block mb-3">
+                        Fasilitas AC
+                    </label>
+
+                    <select id="ac"
+                            class="w-full border border-slate-200 rounded-xl p-3 bg-white focus:outline-none focus:ring-2 focus:ring-blue-200">
+
+                        <option value="ya">
+                            Tersedia AC
+                        </option>
+
+                        <option value="tidak">
+                            Tidak tersedia AC
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- TOMBOL PREDIKSI -->
+                <button id="btnPrediksi"
+                        class="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white font-semibold p-4 rounded-xl transition">
+
+                    Prediksi Harga Sekarang
+
+                </button>
+
+
+                <!-- HASIL PREDIKSI -->
+                <div id="hasil"
+                     class="hidden mt-6 bg-blue-50 border border-blue-100 rounded-xl p-5">
+
+                    <p class="text-xs uppercase tracking-wider font-bold text-blue-600">
+                        Hasil Prediksi Machine Learning
+                    </p>
+
+                    <p class="text-sm text-blue-700 mt-2">
+                        Estimasi harga kos
+                    </p>
+
+                    <h3 id="hargaHasil"
+                        class="text-3xl sm:text-4xl font-extrabold text-blue-800 mt-1">
+                        -
+                    </h3>
+
+                    <p id="keterangan"
+                       class="text-sm text-blue-700 mt-3">
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- INSIGHT DATA -->
+            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-100">
+
+                <h3 class="text-xl font-bold">
+                    Insight Data Kos
+                </h3>
+
+                <p class="text-sm text-slate-500 mt-2">
+                    Fakta singkat berdasarkan 30 data kos.
+                </p>
+
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-7">
+
+
+                    <!-- KOS DENGAN AC -->
+                    <div class="bg-blue-50 rounded-xl p-5">
+
+                        <p class="text-sm text-slate-500">
+                            ❄️ Kos dengan AC
+                        </p>
+
+                        <h4 class="text-2xl font-extrabold text-blue-700 mt-1">
+                            14
+                        </h4>
+
+                        <p class="text-xs text-slate-500 mt-2">
+                            Dari total {{ total_kos }} data kos
+                        </p>
+
+                    </div>
+
+
+                    <!-- KOS TANPA AC -->
+                    <div class="bg-amber-50 rounded-xl p-5">
+
+                        <p class="text-sm text-slate-500">
+                            🏠 Kos tanpa AC
+                        </p>
+
+                        <h4 class="text-2xl font-extrabold text-amber-700 mt-1">
+                            16
+                        </h4>
+
+                        <p class="text-xs text-slate-500 mt-2">
+                            Dari total {{ total_kos }} data kos
+                        </p>
+
+                    </div>
+
+
+                    <!-- JARAK TERDEKAT -->
+                    <div class="bg-emerald-50 rounded-xl p-5">
+
+                        <p class="text-sm text-slate-500">
+                            📍 Jarak Terdekat
+                        </p>
+
+                        <h4 class="text-2xl font-extrabold text-emerald-700 mt-1">
+                            0,6 km
+                        </h4>
+
+                        <p class="text-xs text-slate-500 mt-2">
+                            Jarak minimum
+                        </p>
+
+                    </div>
+
+
+                    <!-- JARAK TERJAUH -->
+                    <div class="bg-purple-50 rounded-xl p-5">
+
+                        <p class="text-sm text-slate-500">
+                            🗺️ Jarak Terjauh
+                        </p>
+
+                        <h4 class="text-2xl font-extrabold text-purple-700 mt-1">
+                            5,0 km
+                        </h4>
+
+                        <p class="text-xs text-slate-500 mt-2">
+                            Jarak maksimum
+                        </p>
+
+                    </div>
+
+
+                    <!-- HARGA TERENDAH -->
+                    <div class="bg-rose-50 rounded-xl p-5">
+
+                        <p class="text-sm text-slate-500">
+                            📉 Harga Terendah
+                        </p>
+
+                        <h4 class="text-2xl font-extrabold text-rose-700 mt-1">
+                            Rp500.000
+                        </h4>
+
+                        <p class="text-xs text-slate-500 mt-2">
+                            Harga minimum
+                        </p>
+
+                    </div>
+
+
+                    <!-- HARGA TERTINGGI -->
+                    <div class="bg-indigo-50 rounded-xl p-5">
+
+                        <p class="text-sm text-slate-500">
+                            📈 Harga Tertinggi
+                        </p>
+
+                        <h4 class="text-2xl font-extrabold text-indigo-700 mt-1">
+                            Rp1.500.000
+                        </h4>
+
+                        <p class="text-xs text-slate-500 mt-2">
+                            Harga maksimum
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ANALISIS GRAFIK -->
+        <section id="analisis" class="mb-10">
+
+            <div class="mb-6">
+
+                <p class="text-xs font-bold tracking-widest text-blue-600 uppercase">
+                    Data Visualization
+                </p>
+
+                <h2 class="text-2xl font-extrabold mt-2">
+                    Analisis Data Kos
+                </h2>
+
+                <p class="text-sm text-slate-500 mt-2">
+                    Visualisasi rata-rata harga kos berdasarkan jarak
+                    dan fasilitas AC.
+                </p>
+
+            </div>
+
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+
+                <!-- GRAFIK JARAK -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+
+                    <h3 class="font-bold text-lg">
+                        Harga Berdasarkan Jarak
+                    </h3>
+
+                    <p class="text-sm text-slate-500 mt-1">
+                        Rata-rata harga pada setiap kelompok jarak.
+                    </p>
+
+                    <div class="mt-6">
+                        <canvas id="grafikJarak"></canvas>
+                    </div>
+
+
+                    <!-- LABEL PENJELASAN AI -->
+                    <div class="mt-5">
+
+                        <span class="inline-flex items-center rounded-full bg-blue-100 text-blue-700 px-3 py-1 text-[10px] font-extrabold tracking-wider">
+                            PENJELASAN AI
+                        </span>
+
+                        <p id="penjelasanJarak"
+                           class="mt-3 p-4 bg-slate-50 rounded-xl text-sm leading-relaxed text-slate-600">
+
+                            Memuat penjelasan grafik...
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- GRAFIK AC -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+
+                    <h3 class="font-bold text-lg">
+                        Harga Berdasarkan Fasilitas AC
+                    </h3>
+
+                    <p class="text-sm text-slate-500 mt-1">
+                        Perbandingan rata-rata harga kos dengan AC
+                        dan tanpa AC.
+                    </p>
+
+                    <div class="mt-6">
+                        <canvas id="grafikAC"></canvas>
+                    </div>
+
+
+                    <!-- LABEL PENJELASAN AI -->
+                    <div class="mt-5">
+
+                        <span class="inline-flex items-center rounded-full bg-blue-100 text-blue-700 px-3 py-1 text-[10px] font-extrabold tracking-wider">
+                            PENJELASAN AI
+                        </span>
+
+                        <p id="penjelasanAC"
+                           class="mt-3 p-4 bg-slate-50 rounded-xl text-sm leading-relaxed text-slate-600">
+
+                            Memuat penjelasan grafik...
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- DAFTAR KOS -->
+        <section id="daftar-kos" class="mb-10">
+
+            <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-5">
+
+                <div>
+
+                    <h2 class="text-2xl font-extrabold mt-2">
+                        Daftar Kos di Kota Madiun
+                    </h2>
+
+                    <p class="text-sm text-slate-500 mt-2">
+                        Daftar seluruh data kos yang digunakan dalam
+                        proses analisis dan prediksi.
+                    </p>
+
+                </div>
+
+                <span class="text-sm text-slate-500 bg-white border border-slate-200 rounded-lg px-3 py-2">
+                    {{ total_kos }} data kos
+                </span>
+
+            </div>
+
+
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+
+
+                <!-- PENCARIAN DAN FILTER -->
+                <div class="p-4 border-b border-slate-100 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+
+                    <input id="cariKos"
+                           type="text"
+                           placeholder="Cari nama kos..."
+                           class="w-full sm:max-w-xs border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200">
+
+
+                    <select id="filterKategori"
+                            class="w-full sm:w-48 border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white">
+
+                        <option value="">
+                            Semua kategori
+                        </option>
+
+                        <option value="Murah">
+                            Murah
+                        </option>
+
+                        <option value="Menengah">
+                            Menengah
+                        </option>
+
+                        <option value="Mahal">
+                            Mahal
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- TABEL DAFTAR KOS -->
+                <div class="overflow-x-auto">
+
+                    <table class="w-full text-sm text-left">
+
+                        <thead class="bg-slate-50 text-slate-500 uppercase text-xs">
+
+                            <tr>
+
+                                <th class="px-5 py-4 font-bold">
+                                    No.
+                                </th>
+
+                                <th class="px-5 py-4 font-bold">
+                                    Nama Kos
+                                </th>
+
+                                <th class="px-5 py-4 font-bold">
+                                    Harga
+                                </th>
+
+                                <th class="px-5 py-4 font-bold">
+                                    Jarak
+                                </th>
+
+                                <th class="px-5 py-4 font-bold">
+                                    AC
+                                </th>
+
+                                <th class="px-5 py-4 font-bold">
+                                    Rating
+                                </th>
+
+                                <th class="px-5 py-4 font-bold">
+                                    Kategori
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="tabelKos" class="divide-y divide-slate-100">
+
+                            {% for kos in daftar_kos %}
+
+                            <tr class="baris-kos hover:bg-slate-50"
+                                data-nama="{{ kos.nama|lower }}"
+                                data-kategori="{{ kos.kategori }}">
+
+                                <td class="px-5 py-4 text-slate-400">
+                                    {{ forloop.counter }}
+                                </td>
+
+                                <td class="px-5 py-4 font-semibold text-slate-800 whitespace-nowrap">
+                                    {{ kos.nama }}
+                                </td>
+
+                                <td class="px-5 py-4 font-semibold text-slate-800 whitespace-nowrap">
+                                    Rp{{ kos.harga_display }}
+                                </td>
+
+                                <td class="px-5 py-4 whitespace-nowrap">
+                                    {{ kos.jarak_km|floatformat:1 }} km
+                                </td>
+
+                                <td class="px-5 py-4">
+
+                                    {% if kos.ac == "ya" %}
+
+                                        <span class="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold">
+                                            Ya
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold">
+                                            Tidak
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+                                <td class="px-5 py-4 whitespace-nowrap">
+                                    ⭐ {{ kos.rating|floatformat:1 }}
+                                </td>
+
+                                <td class="px-5 py-4">
+
+                                    {% if kos.kategori == "Murah" %}
+
+                                        <span class="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold">
+                                            Murah
+                                        </span>
+
+                                    {% elif kos.kategori == "Menengah" %}
+
+                                        <span class="px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold">
+                                            Menengah
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 text-xs font-semibold">
+                                            Mahal
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+                            </tr>
+
+                            {% empty %}
+
+                            <tr>
+                                <td colspan="7"
+                                    class="px-5 py-8 text-center text-slate-500">
+                                    Data kos belum tersedia.
+                                </td>
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                <p id="pesanKosKosong"
+                   class="hidden text-center text-sm text-slate-500 py-8">
+
+                    Data kos tidak ditemukan.
+
+                </p>
+
+
+                <div class="px-5 py-4 border-t border-slate-100 text-xs text-slate-400">
+
+                    Kategori harga:
+                    Murah ≤ Rp800.000<br>
+                    Menengah Rp801.000–Rp1.200.000<br>
+                    Mahal &gt; Rp1.200.000
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- FOOTER -->
+        <footer class="text-center text-xs text-slate-400 py-6 border-t border-slate-200">
+
+            KosPredict MDN· Sistem Prediksi Harga Kos Kota Madiun ·
+            Proyek Sistem Cerdas
+
+        </footer>
+
+    </main>
+
+
+    <!-- JAVASCRIPT -->
+    <script>
+
+        const jarak = document.getElementById("jarak");
+        const rating = document.getElementById("rating");
+
+
+        // Format angka menjadi Rupiah
+        function formatRupiah(nilai) {
+
+            return "Rp" + Math.round(nilai).toLocaleString("id-ID");
+
+        }
+
+
+        // Memperbarui nilai slider jarak
+        jarak.addEventListener("input", function () {
+
+            document.getElementById("jarakValue").textContent =
+                Number(this.value).toFixed(1) + " km";
+
+        });
+
+
+        // Memperbarui nilai slider rating
+        rating.addEventListener("input", function () {
+
+            document.getElementById("ratingValue").textContent =
+                Number(this.value).toFixed(1);
+
+        });
+
+
+        // Menghubungkan tombol dengan API Django
+        document.getElementById("btnPrediksi").addEventListener("click", async function () {
+
+            const tombol = this;
+
+            const hasil = document.getElementById("hasil");
+
+            const hargaHasil = document.getElementById("hargaHasil");
+
+            const keterangan = document.getElementById("keterangan");
+
+
+            const dataInput = {
+
+                jarak_km: parseFloat(jarak.value),
+
+                rating: parseFloat(rating.value),
+
+                ac: document.getElementById("ac").value
+
+            };
+
+
+            tombol.disabled = true;
+
+            tombol.textContent = "Sedang menghitung...";
+
+
+            try {
+
+                const csrfToken = document.querySelector(
+                    '[name=csrfmiddlewaretoken]'
+                ).value;
+
+
+                const response = await fetch("/api/prediksi/", {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type": "application/json",
+
+                        "X-CSRFToken": csrfToken
+
+                    },
+
+                    body: JSON.stringify(dataInput)
+
+                });
+
+
+                const data = await response.json();
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        data.pesan || "Prediksi gagal dilakukan."
+                    );
+
+                }
+
+
+                // Hasil model masih ribuan Rupiah
+                // Dikalikan 1.000 untuk ditampilkan dalam Rupiah
+                hargaHasil.textContent = formatRupiah(
+                    data.prediksi_harga * 1000
+                );
+
+
+                keterangan.textContent =
+                    `Jarak ${data.input.jarak_km} km, rating ${data.input.rating}, AC ${data.input.ac}. ${data.pesan}`;
+
+
+                hasil.classList.remove("hidden");
+
+
+            } catch (error) {
+
+                hasil.classList.remove("hidden");
+
+                hargaHasil.textContent = "Gagal";
+
+                keterangan.textContent = error.message;
+
+
+            } finally {
+
+                tombol.disabled = false;
+
+                tombol.textContent = "Prediksi Harga Sekarang";
+
+            }
+
+        });
+
+
+        // Mengambil data grafik dari API Django
+        async function tampilkanGrafik() {
+
+            try {
+
+                const response = await fetch("/api/grafik/");
+
+                const data = await response.json();
+
+
+                if (!response.ok || data.status !== "success") {
+
+                    throw new Error(
+                        data.pesan || "Gagal mengambil data grafik."
+                    );
+
+                }
+
+
+                // Format sumbu grafik menjadi Rupiah singkat
+                const formatSumbuRupiah = (nilai) => {
+
+                    if (nilai >= 1000000) {
+
+                        return "Rp" +
+                            (nilai / 1000000).toLocaleString(
+                                "id-ID",
+                                { maximumFractionDigits: 1 }
+                            ) + " jt";
+
+                    }
+
+                    return "Rp" +
+                        (nilai / 1000).toLocaleString("id-ID") + " rb";
+
+                };
+
+
+                // GRAFIK JARAK
+                new Chart(document.getElementById("grafikJarak"), {
+
+                    type: "bar",
+
+                    data: {
+
+                        labels: data.grafik_jarak.labels,
+
+                        datasets: [{
+
+                            label: "Rata-rata Harga",
+
+                            data: data.grafik_jarak.data,
+
+                            backgroundColor: "#3B82F6",
+
+                            borderRadius: 8
+
+                        }]
+
+                    },
+
+                    options: {
+
+                        responsive: true,
+
+                        plugins: {
+
+                            legend: {
+                                display: false
+                            },
+
+                            tooltip: {
+
+                                callbacks: {
+
+                                    label: (context) =>
+                                        " " + formatRupiah(context.raw)
+
+                                }
+
+                            }
+
+                        },
+
+                        scales: {
+
+                            y: {
+
+                                beginAtZero: true,
+
+                                ticks: {
+
+                                    callback: formatSumbuRupiah
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                });
+
+
+                // GRAFIK PERBANDINGAN AC
+                new Chart(document.getElementById("grafikAC"), {
+
+                    type: "bar",
+
+                    data: {
+
+                        labels: data.grafik_ac.labels,
+
+                        datasets: [{
+
+                            label: "Rata-rata Harga",
+
+                            data: data.grafik_ac.data,
+
+                            backgroundColor: ["#10B981", "#F59E0B"],
+
+                            borderRadius: 8
+
+                        }]
+
+                    },
+
+                    options: {
+
+                        responsive: true,
+
+                        plugins: {
+
+                            legend: {
+                                display: false
+                            },
+
+                            tooltip: {
+
+                                callbacks: {
+
+                                    label: (context) =>
+                                        " " + formatRupiah(context.raw)
+
+                                }
+
+                            }
+
+                        },
+
+                        scales: {
+
+                            y: {
+
+                                beginAtZero: true,
+
+                                ticks: {
+
+                                    callback: formatSumbuRupiah
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                });
+
+
+                // Menampilkan penjelasan AI
+                document.getElementById("penjelasanJarak").textContent =
+                    data.penjelasan.jarak;
+
+
+                document.getElementById("penjelasanAC").textContent =
+                    data.penjelasan.ac;
+
+
+            } catch (error) {
+
+                document.getElementById("penjelasanJarak").textContent =
+                    "Gagal memuat grafik: " + error.message;
+
+
+                document.getElementById("penjelasanAC").textContent =
+                    "Gagal memuat grafik: " + error.message;
+
+            }
+
+        }
+
+
+        // Pencarian dan filter kategori daftar kos
+        function filterDaftarKos() {
+
+            const kataKunci = document.getElementById("cariKos")
+                .value.toLowerCase();
+
+            const kategori = document.getElementById("filterKategori")
+                .value;
+
+            const baris = document.querySelectorAll(".baris-kos");
+
+            let jumlahTampil = 0;
+
+
+            baris.forEach((item) => {
+
+                const cocokNama = item.dataset.nama.includes(kataKunci);
+
+                const cocokKategori =
+                    !kategori || item.dataset.kategori === kategori;
+
+                const tampil = cocokNama && cocokKategori;
+
+
+                item.classList.toggle("hidden", !tampil);
+
+
+                if (tampil) {
+
+                    jumlahTampil++;
+
+                }
+
+            });
+
+
+            document.getElementById("pesanKosKosong").classList.toggle(
+                "hidden",
+                jumlahTampil > 0
+            );
+
+        }
+
+
+        document.getElementById("cariKos").addEventListener(
+            "input",
+            filterDaftarKos
+        );
+
+
+        document.getElementById("filterKategori").addEventListener(
+            "change",
+            filterDaftarKos
+        );
+
+
+        // Menjalankan grafik ketika halaman dibuka
+        tampilkanGrafik();
+
+    </script>
+
+</body>
+</html>
